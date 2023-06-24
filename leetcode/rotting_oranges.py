@@ -56,3 +56,42 @@ class Solution:
             
         # return -1 if there is a fresh orange, else return count
         return -1 if fresh else count
+    
+
+# my solution (bfs)
+from collections import deque
+class Solution:
+    def orangesRotting(self, grid: List[List[int]]) -> int:
+        freshCount = 0
+        q = deque()
+        height = len(grid)
+        width = len(grid[0])
+        visited = set()
+        time = 0
+        for r in range(height):
+            for c in range(width):
+                # if current cell is fresh, increment freshCount
+                if grid[r][c] == 1:
+                    freshCount += 1
+                # if current cell is rotten, add it to queue
+                elif grid[r][c] == 2:
+                    visited.add((r, c))
+                    q.append((r, c, 0))
+        
+        
+        while q:
+            # row, col, time
+            r, c, t = q.popleft()
+            # update max time
+            time = max(time, t)
+            # search neighbors
+            for dy, dx in zip([1, -1, 0, 0], [0, 0, 1, -1]):
+                nextR, nextC = r+dy, c+dx
+                if nextR >= 0 and nextR < height and nextC >= 0 and nextC < width:
+                    if grid[nextR][nextC] == 1 and (nextR, nextC) not in visited:
+                        freshCount -= 1
+                        visited.add((nextR, nextC))
+                        q.append((nextR, nextC, t+1))
+        
+        # return -1 if there is a fresh orange, else return max time
+        return -1 if freshCount else time
